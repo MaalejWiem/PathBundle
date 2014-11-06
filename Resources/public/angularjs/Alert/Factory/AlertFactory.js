@@ -14,7 +14,7 @@
             return {
                 /**
                  * Get all alerts
-                 * @returns Array
+                 * @returns {object}
                  */
                 getAlerts: function () {
                     return alerts;
@@ -33,11 +33,9 @@
                     alerts[currentIndex] = alert;
 
                     // Auto close alert
-                    /*$timeout(function () {
-                        console.log(alerts);
+                    $timeout(function () {
                         this.closeAlert(alert);
-                        console.log(alerts);
-                    }.bind(this), 3000);*/
+                    }.bind(this), 3000);
 
                     return this;
                 },

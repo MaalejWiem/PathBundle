@@ -7,8 +7,6 @@
     angular.module('ResourceModule').factory('ResourceFactory', [
         'PathFactory',
         function (PathFactory) {
-            var resource = null;
-
             // Base template used to create new resource
             var baseResource = {
                 id                  : null,
@@ -19,25 +17,6 @@
             };
 
             return {
-                /**
-                 *
-                 * @returns object
-                 */
-                getResource: function() {
-                    return resource;
-                },
-
-                /**
-                 *
-                 * @param data
-                 * @returns ResourceFactory
-                 */
-                setResource: function(data) {
-                    resource = data;
-
-                    return this;
-                },
-
                 /**
                  *
                  * @returns object
@@ -58,13 +37,15 @@
                     var stepFound = false;
                     var inheritedResources = [];
 
-                    var path = PathFactory.getPath();
-                    if (path && path.steps) {
-                        for (var i = 0; i < path.steps.length; i++) {
-                            var currentStep = path.steps[i];
-                            stepFound = this.retrieveInheritedResources(stepToFind, currentStep, inheritedResources);
-                            if (stepFound) {
-                                break;
+                    if (stepToFind) {
+                        var path = PathFactory.getPath();
+                        if (path && path.steps) {
+                            for (var i = 0; i < path.steps.length; i++) {
+                                var currentStep = path.steps[i];
+                                stepFound = this.retrieveInheritedResources(stepToFind, currentStep, inheritedResources);
+                                if (stepFound) {
+                                    break;
+                                }
                             }
                         }
                     }

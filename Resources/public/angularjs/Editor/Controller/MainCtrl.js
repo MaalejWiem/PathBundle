@@ -13,39 +13,32 @@
         'AlertFactory',
         'ResourceFactory',
         function ($scope, $modal, HistoryFactory, ClipboardFactory, PathFactory, AlertFactory, ResourceFactory) {
-            $scope.path = EditorApp.currentPath;
+            // Init some vars
+            $scope.path            = EditorApp.currentPath;
+            $scope.webDir          = EditorApp.webDir;
+            $scope.saveAndClose    = false;
+            $scope.previewStep     = null;
+            $scope.historyDisabled = HistoryFactory.getDisabled();
+
             PathFactory.setPath($scope.path);
             
-			if (undefined != $scope.path.steps[0] && (null === $scope.path.steps[0].name || $scope.path.steps[0].name.length !== 0)) {
-				// Root step has no name
-				if (null !== $scope.path.name && $scope.path.name.length !== 0) {
-				    // Give the same name than the path
-				    $scope.path.steps[0].name = $scope.path.name;
-				} else {
-				    // Give a default name
-				    $scope.path.steps[0].name = Translator.get('path_editor:root_default_name');
-				}
-			}
-
-            // Store symfony base partials route
-            $scope.webDir = EditorApp.webDir;
-
-            // Update History if needed
-            if (-1 === HistoryFactory.getHistoryState()) {
-                HistoryFactory.update($scope.path);
+            if (undefined != $scope.path.steps[0] && (null === $scope.path.steps[0].name || $scope.path.steps[0].name.length !== 0)) {
+                // Root step has no name
+                if (null !== $scope.path.name && $scope.path.name.length !== 0) {
+                    // Give the same name than the path
+                    $scope.path.steps[0].name = $scope.path.name;
+                } else {
+                    // Give a default name
+                    $scope.path.steps[0].name = Translator.get('path_editor:root_default_name');
+                }
             }
 
-            // Store current previewed step
-            $scope.previewStep = null;
-
-            $scope.saveAndClose = false;
-
-            $scope.historyDisabled = HistoryFactory.getDisabled();
+            HistoryFactory.init($scope.path);
 
             /**
              * Update History when general data change
              */
-            $scope.updateHistory = function() {
+            $scope.updateHistory = function () {
                 HistoryFactory.update($scope.path);
             };
 
@@ -53,26 +46,16 @@
              * Display step in the preview zone
              * @returns void
              */
-            $scope.setPreviewStep = function(step) {
-                // We are not editing a step => we can change the preview
-                var isRootStep = false;
-                var rootStep = null;
-                if (undefined !== $scope.path && null !== $scope.path && undefined !== $scope.path.steps[0]) {
-                    rootStep = $scope.path.steps[0];
-                }
-
+            $scope.setPreviewStep = function (step) {
                 if (step) {
                     $scope.previewStep = step;
-                    if (step.id === rootStep.id) {
-                        isRootStep = true;
+                }
+                else {
+                    if (undefined !== $scope.path && null !== $scope.path && undefined !== $scope.path.steps[0]) {
+                        $scope.previewStep = $scope.path.steps[0];
                     }
                 }
-                else if (rootStep) {
-                    $scope.previewStep = rootStep;
-                    isRootStep = true;
-                }
 
-                $scope.stepIsRootNode = isRootStep;
                 $scope.inheritedResources = ResourceFactory.getInheritedResources($scope.previewStep);
             };
 
@@ -116,8 +99,7 @@
              */
             $scope.undo = function() {
                 if (HistoryFactory.canUndo()) {
-                    HistoryFactory.undo();
-                    $scope.path = PathFactory.getPath();
+                    HistoryFactory.undo(PathFactory.getPath());
 
                     $scope.updatePreviewStep();
                 }
@@ -129,8 +111,7 @@
              */
             $scope.redo = function() {
                 if (HistoryFactory.canRedo()) {
-                    HistoryFactory.redo();
-                    $scope.path = PathFactory.getPath();
+                    HistoryFactory.redo(PathFactory.getPath());
 
                     $scope.updatePreviewStep();
                 }

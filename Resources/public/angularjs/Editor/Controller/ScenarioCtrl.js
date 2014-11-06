@@ -58,8 +58,8 @@
                     templateUrl: EditorApp.webDir + 'bundles/innovapath/angularjs/Confirm/Partial/confirm.html',
                     controller: 'ConfirmModalCtrl',
                     resolve: {
-                        title: function () { return Translator.get('path_editor:step_delete_title', { stepName: step.name }) },
-                        message: function () { return Translator.get('path_editor:step_delete_confirm') },
+                        title:         function () { return Translator.get('path_editor:step_delete_title', { stepName: step.name }) },
+                        message:       function () { return Translator.get('path_editor:step_delete_confirm') },
                         confirmButton: function () { return Translator.get('path_editor:step_delete') }
                     }
                 });
